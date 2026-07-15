@@ -1,0 +1,19 @@
+name: prueba pc
+channels:
+  - conda-forge
+dependencies:
+  - python=3.14
+  - pip
+  - ipython
+  - jupyterlab
+  - matplotlib
+  - notebook
+  - numpy
+  - pandas
+  - scikit-learn
+  - black
+  - flake8
+  - isort
+  - pip:
+    - python-dotenv
+    - -e .
