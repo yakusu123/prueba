@@ -1,78 +1,27 @@
-#################################################################################
-# GLOBALS                                                                       #
-#################################################################################
+# Variables
+PYTHON = python
+CONDA_ENV = scraper_env
 
-PROJECT_NAME = prueba pc
-PYTHON_VERSION = 3.14
-PYTHON_INTERPRETER = python
+# Declaramos los comandos que no son archivos físicos
+.PHONY: install db scrape run clean
 
-#################################################################################
-# COMMANDS                                                                      #
-#################################################################################
+# 1. Instala el entorno virtual con Conda
+install:
+	conda env create -f environment.yml
 
+# 2. Crea la base de datos (Ejecuta models.py dentro de src)
+db:
+	$(PYTHON) src/models.py
 
-## Install Python dependencies
-.PHONY: requirements
-requirements:
-	conda env update --name $(PROJECT_NAME) --file environment.yml --prune
-	
+# 3. Ejecuta únicamente el scraper (Ejecuta scrapping.py dentro de src)
+scrape:
+	$(PYTHON) src/scrapping.py
 
+# 4. Flujo completo: Crea la base de datos y luego ejecuta el scraper
+run: db scrape
 
-
-## Delete all compiled Python files
-.PHONY: clean
+# 5. Limpieza: Borra la base de datos y cachés
 clean:
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
-
-
-## Lint using flake8, black, and isort (use `make format` to do formatting)
-.PHONY: lint
-lint:
-	flake8 src
-	isort --check --diff src
-	black --check src
-
-## Format source code with black
-.PHONY: format
-format:
-	isort src
-	black src
-
-
-
-
-
-## Set up Python interpreter environment
-.PHONY: create_environment
-create_environment:
-	conda env create --name $(PROJECT_NAME) -f environment.yml
-	
-	@echo ">>> conda env created. Activate with:\nconda activate $(PROJECT_NAME)"
-	
-
-
-
-#################################################################################
-# PROJECT RULES                                                                 #
-#################################################################################
-
-
-
-#################################################################################
-# Self Documenting Commands                                                     #
-#################################################################################
-
-.DEFAULT_GOAL := help
-
-define PRINT_HELP_PYSCRIPT
-import re, sys; \
-lines = '\n'.join([line for line in sys.stdin]); \
-matches = re.findall(r'\n## (.*)\n[\s\S]+?\n([a-zA-Z_-]+):', lines); \
-print('Available rules:\n'); \
-print('\n'.join(['{:25}{}'.format(*reversed(match)) for match in matches]))
-endef
-export PRINT_HELP_PYSCRIPT
-
-help:
-	@$(PYTHON_INTERPRETER) -c "${PRINT_HELP_PYSCRIPT}" < $(MAKEFILE_LIST)
+	rm -f prueba.db
+	rm -rf src/__pycache__
+	rm -rf __pycache__

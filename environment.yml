@@ -15,5 +15,6 @@ dependencies:
   - flake8
   - isort
   - pip:
-    - python-dotenv
-    - -e .
+    - selenium
+    - webdriver-manager
+    - sqlmodel
