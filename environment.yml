@@ -9,6 +9,7 @@ dependencies:
   - matplotlib
   - notebook
   - numpy
+  - datetime
   - pandas
   - scikit-learn
   - black

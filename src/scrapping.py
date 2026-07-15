@@ -29,14 +29,24 @@ datos = []
 
 for x in range(5):
     wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".product-card")))
-    productos = driver.find_elements(By.CSS_SELECTOR, ".product-card.css-e8at8d.eag3qlw10")
+    productos = driver.find_elements(
+        By.CSS_SELECTOR, ".product-card.css-e8at8d.eag3qlw10"
+    )
     for producto in productos:
-        href = producto.find_element(By.CSS_SELECTOR, "a.card-header.css-o171kl.eag3qlw2").get_attribute("href")
+        href = producto.find_element(
+            By.CSS_SELECTOR, "a.card-header.css-o171kl.eag3qlw2"
+        ).get_attribute("href")
         id_producto = int(href.split("/")[-1])  # type: ignore[union-attr]
-        titulo = producto.find_element(By.CSS_SELECTOR, ".title.css-7u5e79.eag3qlw7").text
-        lista_categorias = producto.find_elements(By.CSS_SELECTOR, ".css-1pewyd6.eag3qlw8")
+        titulo = producto.find_element(
+            By.CSS_SELECTOR, ".title.css-7u5e79.eag3qlw7"
+        ).text
+        lista_categorias = producto.find_elements(
+            By.CSS_SELECTOR, ".css-1pewyd6.eag3qlw8"
+        )
         categorias = ", ".join([cat.text for cat in lista_categorias])
-        precio_texto = producto.find_element(By.CSS_SELECTOR, ".price-wrapper.css-li4v8k.eag3qlw4").text
+        precio_texto = producto.find_element(
+            By.CSS_SELECTOR, ".price-wrapper.css-li4v8k.eag3qlw4"
+        ).text
         precio = float(precio_texto.replace("€", "").replace(",", ".").strip())
         datos.append(
             {

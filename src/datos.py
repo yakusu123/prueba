@@ -12,7 +12,9 @@ def guardar_datos_extraidos(datos_extraidos):
 
             # ── 1. GESTIÓN DE CATEGORÍA (Mantenemos la validación para evitar errores de duplicidad) ──
             if nombre_categoria not in tipos_cache:
-                statement = select(ProductType).where(ProductType.name == nombre_categoria)
+                statement = select(ProductType).where(
+                    ProductType.name == nombre_categoria
+                )
                 tipo_db = session.exec(statement).first()
 
                 if not tipo_db:
@@ -29,7 +31,7 @@ def guardar_datos_extraidos(datos_extraidos):
                 title=dato["title"],
                 price_eur=dato["price_eur"],
                 scraped_at=datetime.now(),
-                type=tipos_cache[nombre_categoria]
+                type=tipos_cache[nombre_categoria],
             )
             session.add(nuevo_producto)
         session.commit()

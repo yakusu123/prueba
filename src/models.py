@@ -2,6 +2,7 @@ from typing import List, Optional
 from datetime import datetime
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
 
+
 class ProductType(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(unique=True)
@@ -16,6 +17,7 @@ class Product(SQLModel, table=True):
     scraped_at: datetime
     type_id: int | None = Field(default=None, foreign_key="producttype.id")
     type: Optional[ProductType] = Relationship(back_populates="products")
+
 
 sqlite_file_name = "prueba.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
