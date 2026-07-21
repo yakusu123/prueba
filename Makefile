@@ -1,21 +1,18 @@
-.PHONY: install run lint db scrape clean
+.PHONY: install lint format run test
+
+ENV_NAME := gamescout
 
 install:
-	conda env create -f environment.yml
-
-db:
-	python src/models.py
-
-scrape:
-	python src/scrapping.py
-
-run: db scrape
+	conda env create -f environment.yml || conda env update -f environment.yml --prune
 
 lint:
-	ruff check --fix .
-	ruff format .
+	flake8 gamescout tests
 
-clean:
-	rm -f prueba.db
-	rm -rf src/__pycache__
-	rm -rf .ruff_cache
+format:
+	black gamescout tests
+
+run:
+	python -m gamescout.main
+
+test:
+	pytest -v

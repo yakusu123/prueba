@@ -1,21 +1,12 @@
-name: prueba pc
+name: gamescout
 channels:
   - conda-forge
 dependencies:
-  - python=3.14
+  - python=3.11
   - pip
-  - ipython
-  - jupyterlab
-  - matplotlib
-  - notebook
-  - numpy
-  - datetime
-  - pandas
-  - scikit-learn
-  - black
-  - flake8
-  - isort
   - pip:
-    - selenium
-    - webdriver-manager
-    - sqlmodel
+      - sqlmodel==0.0.22
+      - selenium==4.25.0
+      - black==24.10.0
+      - flake8==7.1.1
+      - pytest==8.3.3
