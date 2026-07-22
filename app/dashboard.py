@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px  # type: ignore[import-untyped]
 import sqlite3
 import os
+import numpy as np
+from app.stats import category_stats  # type: ignore[import-not-found]
 
 st.set_page_config(page_title="Dashboard", layout="wide", page_icon="📊")
 
@@ -20,6 +22,7 @@ def load_data():
             p.title AS Titulo,
             p.price_eur AS Precio_EUR,
             t.name AS Categoria,
+            p.type_id AS Categoria_ID, -- AQUÍ ESTÁ EL ID
             p.scraped_at AS Fecha_Extraccion
         FROM product p
         LEFT JOIN producttype t ON p.type_id = t.id
@@ -46,7 +49,7 @@ else:
     st.success("¡Datos cargados correctamente!")
 
 with st.sidebar:
-    st.header("⚙️ Configuración")
+    st.header("⚙Configuración")
     st.write("Ajusta los parámetros del gráfico:")
     buscador = st.text_input("buscar juego")
 
@@ -75,7 +78,7 @@ col3.metric("Juego Más Caro", f"€ {df_filtrado['Precio_EUR'].max():.2f}")
 
 st.divider()
 
-tab1, tab2, tab3= st.tabs(["top 10", "Distribuciones", "Relaciones"])
+tab1, tab2, tab3, tab4= st.tabs(["top 10", "Distribuciones", "Relaciones", "Resumen por categoria"])
 
 with tab1:
     st.subheader("Top 10 mas caros")
@@ -99,12 +102,51 @@ with tab3:
     )
     fig_promedios.update_layout(xaxis={'categoryorder': 'total descending'})
     st.plotly_chart(fig_promedios, use_container_width=True)
+with tab4:
+    st.subheader("Resumen Estadístico por Categoría (Motor Numba)")
+    preciostab4 = df_filtrado['Precio_EUR'].to_numpy(dtype=np.float32)
+    categoriastab4 = df_filtrado['Categoria'].to_numpy()
+    categoriastab4 = df_filtrado['Categoria'].dropna().unique()
+    resultadostab4 = []
+    for cat in categoriastab4:
+        idtab4 = np.where(categoriastab4 == cat)[0]
+        c_max, c_min, c_mean, c_std = category_stats(preciostab4, idtab4)
+        resultadostab4.append({
+            "Categoria": cat,
+            "Mínimo": c_min,
+            "Promedio": c_mean,
+            "Máximo": c_max,
+            "Desviación Estándar": c_std
+        })
+    if resultadostab4:
+        df_resumen = pd.DataFrame(resultadostab4)
+        st.dataframe(
+            df_resumen.style.format({
+                "Mínimo": "{:.2f}",
+                "Promedio": "{:.2f}",
+                "Máximo": "{:.2f}",
+                "Desviación Estándar": "{:.2f}"
+            }),
+            use_container_width=True,
+            hide_index=True
+        )
+        fig_resumen = px.bar(
+            df_resumen,
+            x="Categoria",
+            y=["Mínimo", "Promedio", "Máximo"],
+            barmode="group",
+            text_auto=".2f",
+            title="Comparativa de Precios por Categoría",
+            labels={"value": "Precio (€)", "variable": "Métrica"}
+        )
+        fig_resumen.update_layout(yaxis_title="Euros (€)")
+        st.plotly_chart(fig_resumen, use_container_width=True)
 with st.expander("Ver más detalles de los datos y exportar"):
     st.dataframe(df_filtrado, use_container_width=True)
 
     csv = df_filtrado.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="📥 Descargar CSV Filtrado",
+        label="Descargar CSV Filtrado",
         data=csv,
         file_name="gamescout_filtrado.csv",
         mime="text/csv"
