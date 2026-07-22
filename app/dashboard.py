@@ -104,13 +104,20 @@ with tab3:
     st.plotly_chart(fig_promedios, use_container_width=True)
 with tab4:
     st.subheader("Resumen Estadístico por Categoría (Motor Numba)")
+
     preciostab4 = df_filtrado['Precio_EUR'].to_numpy(dtype=np.float32)
-    categoriastab4 = df_filtrado['Categoria'].to_numpy()
-    categoriastab4 = df_filtrado['Categoria'].dropna().unique()
+    categorias_originales = df_filtrado['Categoria'].to_numpy()  # Arreglo completo
+    categorias_unicas = df_filtrado['Categoria'].dropna().unique()  # Solo los nombres únicos
+
     resultadostab4 = []
-    for cat in categoriastab4:
-        idtab4 = np.where(categoriastab4 == cat)[0]
+
+    for cat in categorias_unicas:
+        # Buscamos los índices numéricos exactos en el arreglo original
+        idtab4 = np.where(categorias_originales == cat)[0]
+
+        # Ejecutamos Numba con los precios y las posiciones correctas
         c_max, c_min, c_mean, c_std = category_stats(preciostab4, idtab4)
+
         resultadostab4.append({
             "Categoria": cat,
             "Mínimo": c_min,
@@ -118,6 +125,7 @@ with tab4:
             "Máximo": c_max,
             "Desviación Estándar": c_std
         })
+
     if resultadostab4:
         df_resumen = pd.DataFrame(resultadostab4)
         st.dataframe(
@@ -130,6 +138,7 @@ with tab4:
             use_container_width=True,
             hide_index=True
         )
+
         fig_resumen = px.bar(
             df_resumen,
             x="Categoria",
