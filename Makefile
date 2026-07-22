@@ -16,3 +16,5 @@ run:
 
 test:
 	pytest -v
+dashboard:
+	python -m streamlit run gamescout/dashboard.py
