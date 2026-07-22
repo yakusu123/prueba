@@ -17,4 +17,4 @@ run:
 test:
 	pytest -v
 dashboard:
-	python -m streamlit run gamescout/dashboard.py
+	python -m streamlit run app/dashboard.py

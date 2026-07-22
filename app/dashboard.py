@@ -48,6 +48,7 @@ else:
 with st.sidebar:
     st.header("⚙️ Configuración")
     st.write("Ajusta los parámetros del gráfico:")
+    buscador = st.text_input("buscar juego")
 
     categorias = st.multiselect(
         "Filtrar por Categoría:",
@@ -63,9 +64,9 @@ with st.sidebar:
     )
 if len(categorias) == 0:
     categorias = df['Categoria'].dropna().unique()
-
 df_filtrado = df[(df['Categoria'].isin(categorias)) & (df['Precio_EUR'] <= precio_max)]
-
+if buscador:
+    df_filtrado = df_filtrado[df['Titulo'].str.contains(buscador, case=False, na=False)]
 st.subheader("Estadísticas Generales")
 col1, col2, col3 = st.columns(3)
 col1.metric("Total de Juegos", df_filtrado.shape[0])
